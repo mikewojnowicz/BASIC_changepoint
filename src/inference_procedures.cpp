@@ -11,6 +11,7 @@
 #include <list>
 #include <random>
 #include <time.h>
+#include <iostream>
 
 using namespace bayesian_simultaneous_changepoint;
 
@@ -485,6 +486,8 @@ void estimate_parameters(const double* X,
         x(k) = params.vals[k];
         lower_bounds(k) = Model::lower_bound(params.names[k]);
         upper_bounds(k) = Model::upper_bound(params.names[k]);
+
+
     }
     try {
         dlib::find_max_bobyqa(model_params_objective<Model>(params,models),
@@ -494,6 +497,16 @@ void estimate_parameters(const double* X,
     } catch (std::exception& e) {
         std::cerr << "WARNING: BOBYQA optimization for model parameters "
             "did not succeed" << std::endl;
+    }
+
+    // Fix params to preset vals. 
+    for (int k = 0; k < params.K; ++k) {
+        std::cout << "hiya" << std::endl;
+        // Fix a specific parameter, e.g., params.names[k] == "alpha"
+        if (params.names[k] == "lambda") {
+            params.vals[k] = 100.0;  // Assign your desired constant value
+        }
+
     }
 
     /* Update changepoint parameters */
